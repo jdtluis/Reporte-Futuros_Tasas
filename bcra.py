@@ -1,6 +1,8 @@
 import requests as req
 import pandas as pd
 from datetime import date, timedelta
+import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
 
 
 def get_tamar_serie(start, end, id_variable=44):
@@ -24,6 +26,25 @@ def get_tamar_serie(start, end, id_variable=44):
     serie_values.set_index('fecha', inplace=True)
 
     serie_values_filtered = serie_values[(serie_values.index >= start.isoformat()) & (serie_values.index <= end.isoformat())]
-
+    serie_values_filtered = serie_values_filtered.sort_values(by='fecha', ascending=True)
+    serie_values_filtered.rename(columns={'valor': 'Tasa TAMAR'}, inplace=True)
     #serie_values_filtered.plot(kind='line', figsize=(15, 5), title='Tasa TAMAR Bancos Privados')
     return serie_values_filtered
+
+
+
+def plot_tamar_serie(df, figsize=(15, 5)):
+    """
+    Plots the TAMAR series using matplotlib.
+    :param df: DataFrame with a 'valor' column and a datetime index.
+    :param figsize: Tuple for the figure size.
+    """
+    fig, ax = plt.subplots(figsize=figsize)
+    ax.plot(df/100, color='blue', linestyle=':', marker='o', markersize=4)
+    ax.set_title('Tasa TAMAR Bancos Privados')
+    ax.set_xlabel('Fecha')
+    ax.set_ylabel('Tasa TAMAR')
+    ax.yaxis.set_major_formatter(mticker.PercentFormatter(xmax=1))
+    plt.xticks(rotation=45)
+    plt.legend(title=df.columns[0], fontsize=8, handles=[])
+    plt.show()
