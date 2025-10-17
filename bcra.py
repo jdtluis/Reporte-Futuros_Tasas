@@ -39,8 +39,14 @@ def plot_tamar_serie(df, figsize=(15, 5)):
     :param df: DataFrame with a 'valor' column and a datetime index.
     :param figsize: Tuple for the figure size.
     """
+    plt.style.use('seaborn-v0_8-darkgrid')
     fig, ax = plt.subplots(figsize=figsize)
-    ax.plot(df/100, color='blue', linestyle=':', marker='o', markersize=4)
+    ax.plot(df.index, df['Tasa TAMAR']/100, color='blue', linestyle=':', marker='o', markersize=4)
+    #df.index = pd.to_datetime(df.index)
+    #df.reset_index(inplace=True)
+    #dates = df.fecha
+    for x, y in zip(df.index, df['Tasa TAMAR'].values):
+        ax.text(x, y/100, f"{y:.0f}%", ha="left", va="top", fontsize=8)
     ax.set_title('Tasa TAMAR Bancos Privados')
     ax.set_xlabel('Fecha')
     ax.set_ylabel('Tasa TAMAR')
