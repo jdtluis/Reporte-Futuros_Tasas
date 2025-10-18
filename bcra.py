@@ -20,7 +20,10 @@ def get_tamar_serie(start, end, id_variable=44):
 
     serie_values = req.get(base_url + f'estadisticas/v4.0/Monetarias/{str(id_variable)}/', verify=False)
     if serie_values.status_code != 200:
-        raise Exception(f"Error fetching data: {serie_values.status_code}")
+        print(f"Request failed with status code {serie_values.status_code}")
+        print(f"Request failed with status code {serie_values.text}")
+        #raise Exception(f"Error fetching data: {serie_values.status_code}")
+        return None
     serie_values = serie_values.json()
     serie_values = pd.DataFrame(serie_values['results'][0]['detalle'])
     serie_values.set_index('fecha', inplace=True)
@@ -30,7 +33,6 @@ def get_tamar_serie(start, end, id_variable=44):
     serie_values_filtered.rename(columns={'valor': 'Tasa TAMAR'}, inplace=True)
     #serie_values_filtered.plot(kind='line', figsize=(15, 5), title='Tasa TAMAR Bancos Privados')
     return serie_values_filtered
-
 
 
 def plot_tamar_serie(df, figsize=(15, 5)):
