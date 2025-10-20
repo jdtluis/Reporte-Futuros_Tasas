@@ -35,6 +35,16 @@ def get_tamar_serie(start, end, id_variable=44):
     return serie_values_filtered
 
 
+def bcra_fx_limits(date_value):
+    first_date = date.fromisoformat('2025-04-14')
+    initial_upper = 1400
+    initial_lower = 1000
+    days = (date.fromisoformat(date_value) - first_date).days
+    upper = round(initial_upper * (1 + 0.01) ** (days / 30),2)
+    lower = round(initial_lower * (1 - 0.01) ** (days / 30),2)
+    return lower, upper
+
+
 def plot_tamar_serie(df, figsize=(15, 5)):
     """
     Plots the TAMAR series using matplotlib.
