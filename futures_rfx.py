@@ -93,6 +93,50 @@ def plot_limits(df):
     plt.show()
 
 
+def plot_limits_plotly(df):
+    df.rename(columns={'settlement':'Ajuste', 'upper':'Limite superior', 'lower':'Limite inferior'}, inplace=True)
+    import plotly.graph_objects as go
+
+    fig = go.Figure()
+
+    # Define the columns to plot
+    columns = ['Ajuste', 'Limite superior', 'Limite inferior']
+
+    for col in columns:
+        # Drop NaNs to ensure x and y align
+        temp_df = df[['last_day_contract', col]].dropna()
+        x = temp_df['last_day_contract']
+        y = temp_df[col]
+
+        # Add the line
+        fig.add_trace(go.Scatter(
+            x=x,
+            y=y,
+            mode='lines+markers+text',
+            name=col,
+            text=[f'{val:.2f}' for val in y],  # format the values
+            textposition='top right',
+            textfont=dict(size=10)
+        ))
+
+    # Update layout
+    fig.update_layout(
+        title="Futuros y bandas de flotación BCRA",
+        xaxis_title="Fecha",
+        yaxis_title="Precios",
+        legend_title="Futuros y bandas",
+        xaxis=dict(
+            tickformat="%Y-%m",  # Format dates
+            tickangle=45
+        ),
+        height=500,
+        width=1000
+    )
+
+    fig.show()
+
+
+
 def plot_smooth(df, k=3, n_points=400, figsize=(16,6)):
     """
     Plot smooth curves for each column in a DataFrame using cubic spline interpolation.
