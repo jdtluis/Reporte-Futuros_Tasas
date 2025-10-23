@@ -128,8 +128,8 @@ def plot_limits_plotly(df):
             tickformat="%Y-%m",  # Format dates
             tickangle=45
         ),
-        height=500,
-        width=1500
+        height=600,
+        width=1400
     )
 
     fig.show()
@@ -300,7 +300,7 @@ def plot_smooth_plotly(df, k=3, n_points=400):
         template="plotly_white",
         legend_title="Implied Rates",
         height=600,
-        width=1000
+        width=1400
     )
 
     fig.show()
@@ -357,7 +357,6 @@ def plot_futures(data, kind='line', ylabel="Implied Rate", title="Implied Rates 
 
     plt.tight_layout()
     plt.show()
-
 
 
 def plot_futures_ia(data, kind='line', ylabel="Implied Rate", title="Implied Rates Over Time", legend_name="Rates"):
@@ -452,8 +451,10 @@ def plot_futures_plotly(data, kind='line', ylabel="Implied Rate", title="Implied
             return f"{num:.0f}"
 
     df = data.copy()
+    
     if not isinstance(df.index, pd.DatetimeIndex):
         df.index = pd.to_datetime(df.index)
+        df.index = df.index.strftime("%Y-%m-%d")
 
     fig = go.Figure()
 
@@ -484,8 +485,9 @@ def plot_futures_plotly(data, kind='line', ylabel="Implied Rate", title="Implied
         hovermode="x unified",
         template="plotly_white",
         legend_title=legend_name,
-        width=1000,
+        width=1400,
         height=600
     )
-
+    # 🚀 Key fix: treat x-axis as categorical (no missing dates)
+    fig.update_xaxes(type='category')
     fig.show()

@@ -147,8 +147,8 @@ def plot_tamar_serie_plotly(df, col='Tasa TAMAR'):
         yaxis_tickformat=".0%",
         template="plotly_white",
         hovermode="x unified",
-        width=950,
-        height=500,
+        width=1400,
+        height=600,
         legend_title="Serie"
     )
 
