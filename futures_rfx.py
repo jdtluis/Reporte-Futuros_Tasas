@@ -106,12 +106,16 @@ def plot_limits_plotly(df):
         temp_df = df[['last_day_contract', col]].dropna()
         x = temp_df['last_day_contract']
         y = temp_df[col]
+        if col == 'Ajuste':
+            mode = mode='markers+text'
+        else:
+            mode = 'lines+markers+text'
 
         # Add the line
         fig.add_trace(go.Scatter(
             x=x,
             y=y,
-            mode='lines+markers+text',
+            mode=mode,
             name=col,
             text=[f'{val:.2f}' for val in y],  # format the values
             textposition='top right',
@@ -129,7 +133,7 @@ def plot_limits_plotly(df):
             tickangle=45
         ),
         height=600,
-        width=1400
+        width=1000
     )
 
     fig.show()
@@ -268,19 +272,19 @@ def plot_smooth_plotly(df, k=3, n_points=400):
             continue
 
         # Smooth curve
-        x_numeric = np.arange(len(y))
-        spline = make_interp_spline(x_numeric, y.values, k=k)
-        x_smooth = np.linspace(0, len(y)-1, n_points)
-        y_smooth = spline(x_smooth)
-        x_dates = np.linspace(y.index[0].value, y.index[-1].value, n_points)
-        x_dates = pd.to_datetime(x_dates)
+        # x_numeric = np.arange(len(y))
+        # spline = make_interp_spline(x_numeric, y.values, k=k)
+        # x_smooth = np.linspace(0, len(y)-1, n_points)
+        # y_smooth = spline(x_smooth)
+        # x_dates = np.linspace(y.index[0].value, y.index[-1].value, n_points)
+        # x_dates = pd.to_datetime(x_dates)
 
-        fig.add_trace(go.Scatter(
-            x=x_dates,
-            y=y_smooth,
-            mode='lines',
-            name=f"{col} (smooth)"
-        ))
+        # fig.add_trace(go.Scatter(
+        #     x=x_dates,
+        #     y=y_smooth,
+        #     mode='lines',
+        #     name=f"{col} (smooth)"
+        # ))
 
         fig.add_trace(go.Scatter(
             x=y.index,
@@ -297,10 +301,10 @@ def plot_smooth_plotly(df, k=3, n_points=400):
         yaxis_title="Tasa implícita (%)",
         yaxis_tickformat=".0%",
         hovermode="x unified",
-        template="plotly_white",
+        #template="plotly_white",
         legend_title="Implied Rates",
         height=600,
-        width=1400
+        width=1000
     )
 
     fig.show()
@@ -483,9 +487,9 @@ def plot_futures_plotly(data, kind='line', ylabel="Implied Rate", title="Implied
         xaxis_title="Date",
         yaxis_title=ylabel,
         hovermode="x unified",
-        template="plotly_white",
+        #template="plotly_white",
         legend_title=legend_name,
-        width=1400,
+        width=1000,
         height=600
     )
     # 🚀 Key fix: treat x-axis as categorical (no missing dates)

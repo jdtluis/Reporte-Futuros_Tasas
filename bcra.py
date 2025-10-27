@@ -110,7 +110,7 @@ def plot_tamar_serie_ia(df, col='Tasa TAMAR', figsize=(15, 5)):
     plt.show()
 
     
-def plot_tamar_serie_plotly(df, col='Tasa TAMAR'):
+def plot_tamar_serie_plotly(df, title='Tasa TAMAR', x_title='Fecha', y_title='Tasa (%)'):
     """
     Interactive Plotly version of the TAMAR series plot.
     
@@ -125,15 +125,16 @@ def plot_tamar_serie_plotly(df, col='Tasa TAMAR'):
     if not isinstance(df.index, pd.DatetimeIndex):
         df.index = pd.to_datetime(df.index)
 
-    y = df[col] / 100  # normalize for percentage display
+    #y = df  # normalize for percentage display
+    col = df.columns[0]
 
     fig = go.Figure()
 
     fig.add_trace(go.Scatter(
         x=df.index,
-        y=y,
+        y=df[col],
         mode='lines+markers+text',
-        text=[f"{v:.0f}%" for v in df[col]],
+        text=[f"{v*100:.0f}%" for v in df[col]],
         textposition="top center",
         line=dict(color='blue', dash='dot'),
         marker=dict(size=6),
@@ -141,15 +142,25 @@ def plot_tamar_serie_plotly(df, col='Tasa TAMAR'):
     ))
 
     fig.update_layout(
-        title=f"Tasa {col} Bancos Privados",
-        xaxis_title="Fecha",
-        yaxis_title="Tasa (%)",
+        title=title,
+        xaxis_title=x_title,
+        yaxis_title=y_title,
         yaxis_tickformat=".0%",
-        template="plotly_white",
+        #template="plotly_white",
         hovermode="x unified",
-        width=1400,
+        width=1000,
         height=600,
         legend_title="Serie"
     )
 
     fig.show()
+
+
+def get_bills_rates():
+    r = req.get('https://bonistas.com/_next/data/lr1sERoN2K0tsq_R3AglJ/index.json')
+    data = r.json()
+    df = pd.DataFrame(data['pageProps']['bondData'])
+    bills = df[(df.bond_family=='BONO-FIJA') & (df.settlement == '24hs')][['ticker' ,'tna', 'days_to_finish', 'estimation_date']].sort_values(by='days_to_finish')
+    bills['expiration_date'] = pd.to_datetime(bills['estimation_date']) + pd.to_timedelta(bills['days_to_finish'], unit='D')
+    return bills
+
