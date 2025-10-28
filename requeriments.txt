@@ -1,0 +1,7 @@
+requests
+urllib3
+pandas
+ipython
+plotly
+matplotlib
+scipy
