@@ -5,6 +5,8 @@ on:
     - cron: '0 10 * * *'  # Run every day at 19:00 UTC
   workflow_dispatch:       # Allow manual trigger
 
+permissions:
+  contents: write  # allow committing and pushing to gh-pages
 
 jobs:
   run-notebook:
