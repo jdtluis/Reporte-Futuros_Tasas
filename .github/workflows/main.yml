@@ -54,7 +54,7 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add notebook.ipynb index.html
+          git add index.ipynb index.html
           git diff-index --quiet HEAD || git commit -m "Auto-update notebook and HTML [skip ci]"
           git push origin gh-pages
         env:
