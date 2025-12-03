@@ -5,6 +5,8 @@ import tabula.io as tabio
 import numpy as np
 import pandas as pd
 from datetime import date
+import io
+
 
 def search_links():
     url = "https://www.iamc.com.ar/informeslecap/"
@@ -20,7 +22,6 @@ def search_links():
             #report_links.append(full_url)
             # Only first match. Last report
             return full_url
-
 
 
 def fetch_pdf_links():
@@ -67,7 +68,9 @@ def get_data_from_pdf(file):
 
 def get_simu_data():
     files = fetch_pdf_links()
+    r = requests.get(files[0], verify=False)
+    f = io.BytesIO(r.content)
     if files:
-        data = get_data_from_pdf(files[0])
+        data = get_data_from_pdf(f)
         data.to_csv('simu_byma.csv', index=False)
         return data
