@@ -41,6 +41,7 @@ jobs:
           pip install papermill nbconvert jupyter
           pip install beautifulsoup4
           pip install tabula-py
+          pip install JPype1
 
       # Step 6: Execute the notebook
       - name: Run the notebook
