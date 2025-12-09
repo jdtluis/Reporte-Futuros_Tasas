@@ -55,6 +55,7 @@ def get_data_from_pdf(file):
 
     df = df.iloc[int(row_indices[0]):df.shape[0],int(col_indices[0]):df.shape[1]]
     df = df.loc[~df.isna().any(axis=1), ~df.isna().all(axis=0)]
+    df = df.loc[~df.astype(str).apply(lambda col: col.str.contains('[a-zA-Z]')).all(axis=1), :]
     df = pd.concat([df.iloc[:,0].str.split(' ', expand=True), df.iloc[:,1]], axis=1)
     df = df.set_axis(range(df.shape[1]), axis=1)
     df.rename(columns={0:'Fecha', 1:'Tasa', 2:'Monto'}, inplace=True)
