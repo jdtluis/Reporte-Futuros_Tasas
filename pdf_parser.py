@@ -48,23 +48,32 @@ def get_data_from_pdf(file):
     tables = tabio.read_pdf(file, pages="2")
 # Asumo que hay una sola tabla
     df = tables[0]
-    mask = df.astype(str).apply(lambda col: col.str.contains('Simultáneas', case=False))
-
-# Get the integer-based row and column indices from the mask
-    row_indices, col_indices = np.where(mask)
-
-    df = df.iloc[int(row_indices[0]):df.shape[0],int(col_indices[0]):df.shape[1]]
-    df = df.loc[~df.isna().any(axis=1), ~df.isna().all(axis=0)]
-    df = df.loc[~df.astype(str).apply(lambda col: col.str.contains('[a-zA-Z]')).all(axis=1), :]
-    df = pd.concat([df.iloc[:,0].str.split(' ', expand=True), df.iloc[:,1]], axis=1)
-    df = df.set_axis(range(df.shape[1]), axis=1)
-    df.rename(columns={0:'Fecha', 1:'Tasa', 2:'Monto'}, inplace=True)
-    df['Fecha'] = pd.to_datetime(df['Fecha']).dt.strftime('%Y-%m-%d')
-    df['Tasa'] = df['Tasa'].str.replace('%', '').astype(float)
-    df['Monto'] = df['Monto'].str.replace(',', '').astype(float)
-    df.sort_values(by='Fecha',inplace=True)
-    df.reset_index(drop=True, inplace=True)
-    return df
+    row_indices = []
+    col_indices = []
+    for w in ['Fecha', 'VWAP', 'Total']:
+        mask = df.astype(str).apply(lambda col: col.str.contains(w, case=False))
+        # Get the integer-based row and column indices from the mask
+        row_ind_temp , col_ind_temp = np.where(mask)
+        if row_ind_temp.size > 0:
+            row_indices.append(int(row_ind_temp.max()))
+            col_indices.append(int(col_ind_temp.max()))
+    row_indices = max(row_indices)
+    col_indices = list(set(col_indices)) #Remove duplicates
+    df = df.iloc[row_indices:, col_indices] # Slicing the dataframe from the found indices
+    df = df.loc[~df.isna().any(axis=1), ~df.isna().all(axis=0)] # Remove rows with any NaN and columns with all NaN
+    df = df.loc[~df.astype(str).apply(lambda col: col.str.contains('[a-zA-Z]')).all(axis=1), :] # Remove rows with any string values
+    if df.shape[1] == 2:
+        df = pd.concat([df.iloc[:,0].str.split(' ', expand=True), df.iloc[:,1]], axis=1) # Split first column into two and concatenate with second column
+    if df.shape[1] == 3:
+        df = df.set_axis(range(df.shape[1]), axis=1) # Reset column indices
+        df.rename(columns={0:'Fecha', 1:'Tasa', 2:'Monto'}, inplace=True)
+        df['Fecha'] = pd.to_datetime(df['Fecha']).dt.strftime('%Y-%m-%d')
+        df['Tasa'] = df['Tasa'].str.replace('%', '').astype(float)
+        df['Monto'] = df['Monto'].str.replace(',', '').astype(float)
+        df.sort_values(by='Fecha',inplace=True)
+        df.reset_index(drop=True, inplace=True)
+        return df
+    return pd.DataFrame([],columns=['Fecha', 'Tasa', 'Monto'])  # Return empty DataFrame if structure is unexpected
 
 
 def get_simu_data():
