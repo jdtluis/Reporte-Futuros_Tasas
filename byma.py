@@ -1,6 +1,7 @@
 import requests
 import pandas as pd
 from datetime import date
+import plotly.graph_objects as go
 
 
 
@@ -34,3 +35,38 @@ def get_cau_byma():
             hist_cau_byma.to_csv('cau_byma.csv')
             return hist_cau_byma
 
+
+def plot_cau_plotly(df):
+    fig = go.Figure()
+
+    for col in df.columns:
+        x = df.index
+        y = df[col]
+        mode = 'lines+markers+text'
+
+        # Add the line
+        fig.add_trace(go.Scatter(
+            x=x,
+            y=y,
+            mode=mode,
+            name=col,
+            text=[f'{val:.2f}' for val in y],  # format the values
+            textposition='top right',
+            textfont=dict(size=10)
+        ))
+
+    # Update layout
+    fig.update_layout(
+        title="Cauciones BYMA y MAE",
+        xaxis_title="Fecha",
+        yaxis_title="Tasa",
+        legend_title="Tasas",
+        xaxis=dict(
+            tickformat="%Y-%m-%d",  # Format dates
+            tickangle=45
+        ),
+        height=600,
+        width=1000
+    )
+    fig.update_xaxes(type='category')
+    fig.show()

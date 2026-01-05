@@ -15,7 +15,7 @@ def get_tamar_serie(start, end, id_variable=44):
     #end = '2025-10-30'
     #id_variable = 44 # 'TAMAR Bancos Privados'
 
-    catalog = 'https://www.bcra.gob.ar/Catalogo/Content/files/json/principales-variables-v4.json'
+    catalog = 'https://www.bcra.gob.ar/archivos/Catalogo/Content/files/json/principales-variables-v4.json'
     cat = req.get(catalog, verify=False).json()
     base_url = cat['servers'][0]['url']
 
