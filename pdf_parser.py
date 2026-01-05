@@ -48,6 +48,9 @@ def get_data_from_pdf(file):
     tables = tabio.read_pdf(file, pages="2")
 # Asumo que hay una sola tabla
     df = tables[0]
+    mask_table = df.astype(str).apply(lambda col: col.str.contains('VWAP', case=False))
+    if not mask_table.any().any() and len(tables) > 1:
+        df = tables[1] # Try second page if VWAP not found
     row_indices = []
     col_indices = []
     for w in ['Fecha', 'VWAP', 'Total']:
